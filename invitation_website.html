@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Приглашение на Той</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>✉️</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow-x: hidden;
+            color: #2d3748;
+        }
+
+        /* Загрузочный экран */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        #loader.hidden {
+            opacity: 0;
+            transform: scale(1.1);
+            pointer-events: none;
+        }
+
+        .loader-envelope {
+            width: 140px;
+            height: 90px;
+            position: relative;
+            margin-bottom: 40px;
+            filter: drop-shadow(0 15px 40px rgba(0, 0, 0, 0.3));
+        }
+
+        .loader-envelope-body {
+            width: 140px;
+            height: 90px;
+            background: white;
+            border-radius: 10px;
+            position: absolute;
+            animation: floatEnvelope 3s ease-in-out infinite;
+        }
+
+        .loader-envelope-flap {
+            width: 0;
+            height: 0;
+            border-left: 70px solid transparent;
+            border-right: 70px solid transparent;
+            border-bottom: 55px solid #667eea;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: top center;
+            animation: flapOpenClose 3s ease-in-out infinite;
+        }
+
+        .loader-letter {
+            width: 100px;
+            height: 60px;
+            background: linear-gradient(135deg, #f7fafc 0%, #e2e8f0 100%);
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            border-radius: 5px;
+            animation: letterMove 3s ease-in-out infinite;
+        }
+
+        @keyframes floatEnvelope {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        @keyframes flapOpenClose {
+
+            0%,
+            30% {
+                transform: rotateX(0deg);
+            }
+
+            50%,
+            80% {
+                transform: rotateX(180deg);
+            }
+
+            100% {
+                transform: rotateX(0deg);
+            }
+        }
+
+        @keyframes letterMove {
+
+            0%,
+            30% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            50% {
+                transform: translateY(-20px);
+                opacity: 0.8;
+            }
+
+            80%,
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .loader-text {
+            color: white;
+            font-size: 1.3em;
+            font-weight: 300;
+            letter-spacing: 2px;
+            animation: pulseText 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseText {
+
+            0%,
+            100% {
+                opacity: 0.7;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+        }
+
+        /* Контейнер слайдов */
+        .container {
+            width: 100%;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 20px;
+            opacity: 0;
+            transform: translateX(100%) scale(0.9);
+            transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+        }
+
+        .slide.prev {
+            transform: translateX(-100%) scale(0.9);
+        }
+
+        .slide-content {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            padding: clamp(30px, 5vw, 60px);
+            border-radius: 25px;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+            position: relative;
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide-content.transform-to-envelope {
+            animation: transformToEnvelope 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes transformToEnvelope {
+            0% {
+                transform: scale(1) translateY(0) rotateX(0deg);
+                opacity: 1;
+                border-radius: 25px;
+            }
+
+            25% {
+                transform: scale(0.85) translateY(-10vh) rotateX(5deg);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(0.4) translateY(-30vh) rotateX(15deg);
+                opacity: 0.9;
+                border-radius: 40px;
+            }
+
+            75% {
+                transform: scale(0.15) translateY(-70vh) rotateX(25deg) rotateZ(15deg);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(0.05) translateY(-150vh) rotateX(40deg) rotateZ(25deg);
+                opacity: 0;
+            }
+        }
+
+        h1 {
+            font-size: clamp(2em, 5vw, 3.2em);
+            color: #667eea;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        h2 {
+            font-size: clamp(1.5em, 4vw, 2.2em);
+            color: #764ba2;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        h3 {
+            font-size: clamp(1.3em, 3.5vw, 1.8em);
+            color: #667eea;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        p {
+            font-size: clamp(1em, 2.5vw, 1.2em);
+            line-height: 1.8;
+            color: #4a5568;
+            margin-bottom: 15px;
+        }
+
+        .info-block {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: clamp(15px, 3vw, 22px);
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .info-block:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .info-block strong {
+            color: #667eea;
+            font-size: 1.15em;
+        }
+
+        /* Форма */
+        .form-group {
+            margin-bottom: 28px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 12px;
+            color: #4a5568;
+            font-size: clamp(0.95em, 2.2vw, 1.15em);
+            font-weight: 500;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            margin-left: 8px;
+        }
+
+        .tooltip-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            width: 250px;
+            background-color: #2d3748;
+            color: white;
+            text-align: center;
+            border-radius: 8px;
+            padding: 12px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -125px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9em;
+            line-height: 1.5;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #2d3748 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: clamp(12px, 2.5vw, 16px);
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: clamp(0.9em, 2vw, 1.05em);
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            cursor: pointer;
+            font-size: 1.3em;
+            color: #718096;
+            transition: color 0.3s ease;
+            user-select: none;
+        }
+
+        .password-toggle:hover {
+            color: #667eea;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: clamp(12px, 2.5vw, 20px);
+            flex-wrap: wrap;
+        }
+
+        .radio-option {
+            flex: 1;
+            min-width: clamp(130px, 30vw, 160px);
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-option label {
+            display: block;
+            padding: clamp(15px, 3vw, 22px);
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+        }
+
+        .radio-option label:hover {
+            background: linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .radio-option input[type="radio"]:checked+label {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        select {
+            width: 100%;
+            padding: clamp(12px, 2.5vw, 16px);
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: clamp(0.9em, 2vw, 1.05em);
+            font-family: 'Montserrat', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            width: 100%;
+            padding: clamp(12px, 2.5vw, 16px);
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: clamp(0.9em, 2vw, 1.05em);
+            font-family: 'Montserrat', sans-serif;
+            min-height: clamp(80px, 15vw, 110px);
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Кнопки */
+        .btn-group {
+            display: flex;
+            gap: clamp(10px, 2.5vw, 18px);
+            margin-top: 35px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: clamp(12px, 2.5vw, 16px) clamp(25px, 5vw, 45px);
+            font-size: clamp(0.95em, 2.2vw, 1.15em);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 35px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-primary:disabled {
+            background: linear-gradient(135deg, #cbd5e0 0%, #a0aec0 100%);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #cbd5e0 0%, #a0aec0 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Навигация */
+        .nav-dots {
+            position: fixed;
+            right: clamp(15px, 3vw, 35px);
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: clamp(10px, 2vw, 14px);
+            height: clamp(10px, 2vw, 14px);
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            margin: clamp(12px, 2.5vw, 18px) 0;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+        }
+
+        .nav-dot:hover {
+            background: rgba(255, 255, 255, 0.7);
+            transform: scale(1.2);
+        }
+
+        .nav-dot.active {
+            background: white;
+            transform: scale(1.4);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Админ вход */
+        .admin-lock {
+            position: fixed;
+            bottom: clamp(18px, 3vw, 25px);
+            right: clamp(18px, 3vw, 25px);
+            font-size: clamp(22px, 4vw, 28px);
+            cursor: pointer;
+            opacity: 0.25;
+            transition: all 0.4s ease;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            width: clamp(45px, 8vw, 60px);
+            height: clamp(45px, 8vw, 60px);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .admin-lock:hover {
+            opacity: 0.7;
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #ffffff 0%, #f7fafc 100%);
+            padding: clamp(30px, 5vw, 45px);
+            border-radius: 25px;
+            max-width: 950px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .guest-list {
+            margin-top: 25px;
+        }
+
+        .guest-item {
+            background: white;
+            padding: clamp(15px, 3vw, 20px);
+            margin: 15px 0;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .guest-item:hover {
+            transform: translateX(8px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .guest-item.coming {
+            border-left-color: #48bb78;
+        }
+
+        .guest-item.not-coming {
+            border-left-color: #f56565;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(clamp(130px, 25vw, 160px), 1fr));
+            gap: clamp(15px, 3vw, 22px);
+            margin: 25px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: clamp(18px, 3.5vw, 25px);
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-number {
+            font-size: clamp(2em, 5vw, 2.8em);
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: clamp(0.85em, 2vw, 1em);
+            color: #718096;
+            font-weight: 500;
+        }
+
+        /* Экран благодарности */
+        .thank-you-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease;
+            padding: 20px;
+        }
+
+        .thank-you-screen.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .thank-you-content {
+            text-align: center;
+            color: white;
+            max-width: 700px;
+        }
+
+        .thank-you-content h2 {
+            font-size: clamp(2.5em, 7vw, 4em);
+            color: white;
+            margin-bottom: 30px;
+            animation: scaleIn 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .thank-you-content p {
+            font-size: clamp(1.1em, 3vw, 1.6em);
+            color: white;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .thank-you-icon {
+            font-size: clamp(4em, 10vw, 6em);
+            margin-bottom: 35px;
+            animation: bounceIn 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes scaleIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.25) rotate(12deg);
+            }
+
+            70% {
+                transform: scale(0.9) rotate(-8deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .radio-group {
+                flex-direction: column;
+            }
+
+            .radio-option {
+                min-width: 100%;
+            }
+
+            .btn-group {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .tooltip-text {
+                width: 200px;
+                margin-left: -100px;
+            }
+
+            .modal-content {
+                padding: 25px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .slide-content {
+                padding: 25px 18px;
+            }
+
+            .info-block {
+                padding: 15px;
+            }
+
+            .nav-dots {
+                right: 10px;
+            }
+
+            .admin-lock {
+                bottom: 15px;
+                right: 15px;
+            }
+        }
+
+        /* Скроллбар */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Загрузочный экран -->
+    <div id="loader">
+        <div class="loader-envelope">
+            <div class="loader-envelope-body"></div>
+            <div class="loader-letter"></div>
+            <div class="loader-envelope-flap"></div>
+        </div>
+        <div class="loader-text">Загрузка приглашения...</div>
+    </div>
+
+    <!-- Контейнер слайдов -->
+    <div class="container">
+        <!-- Слайд 1: Приветствие -->
+        <div class="slide active" data-slide="0">
+            <div class="slide-content">
+                <h1>Приглашаем на Той</h1>
+                <p style="text-align: center; font-size: 1.4em; margin: 30px 0; font-weight: 500;">Дорогие друзья!</p>
+                <p style="text-align: center;">Мы рады пригласить вас на наш праздничный той, наполненный радостью,
+                    теплом и незабываемыми моментами.</p>
+                    <p style="text-align: center;">От Бакдолота и (Имя)</p>
+                <div class="btn-group">
+                    <button class="btn-primary" onclick="nextSlide()"
+                        title="Перейти к деталям мероприятия">Далее</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 2: Детали мероприятия -->
+        <div class="slide" data-slide="1">
+            <div class="slide-content">
+                <h2>Детали мероприятия</h2>
+
+                <div class="info-block">
+                    <p><strong>📅 Дата:</strong> 10 ноября 2025 года</p>
+                </div>
+
+                <div class="info-block">
+                    <p><strong>🕐 Время:</strong> 18:00</p>
+                </div>
+
+                <div class="info-block">
+                    <p><strong>📍 Место:</strong> ЦУМ <br>
+                        ул. Масалиева, 25</p>
+                </div>
+
+                <div class="info-block">
+                    <p><strong>👔 Дресс-код:</strong> Элегантный вечерний стиль</p>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn-secondary" onclick="prevSlide()" title="Вернуться назад">Назад</button>
+                    <button class="btn-primary" onclick="nextSlide()" title="Посмотреть программу вечера">Далее</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 3: Программа -->
+        <div class="slide" data-slide="2">
+            <div class="slide-content">
+                <h2>Программа вечера</h2>
+
+                <div class="info-block">
+                    <p><strong>18:00</strong> — Приветствие гостей</p>
+                </div>
+
+                <div class="info-block">
+                    <p><strong>18:30</strong> — Праздничный ужин</p>
+                </div>
+
+                <div class="info-block">
+                    <p><strong>20:00</strong> — Развлекательная программа</p>
+                </div>
+
+                <div class="info-block">
+                    <p><strong>22:00</strong> — Танцы и общение</p>
+                </div>
+
+                <p style="text-align: center; margin-top: 30px; font-style: italic;">Будем рады видеть вас на нашем
+                    празднике!</p>
+
+                <div class="btn-group">
+                    <button class="btn-secondary" onclick="prevSlide()" title="Вернуться назад">Назад</button>
+                    <button class="btn-primary" onclick="nextSlide()" title="Подтвердить участие">Далее</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 4: Форма подтверждения -->
+        <div class="slide" data-slide="3">
+            <div class="slide-content" id="formContent">
+                <h2>Подтверждение участия</h2>
+
+                <form id="rsvpForm">
+                    <div class="form-group">
+                        <label>
+                            Имя и Фамилия *
+                            <span class="tooltip">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">Укажите ваше полное имя и фамилию для списка гостей</span>
+                            </span>
+                        </label>
+                        <input type="text" id="guestName" required placeholder="Введите ваше имя и фамилию">
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            Вы придёте? *
+                            <span class="tooltip">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">Пожалуйста, сообщите нам о вашем решении, чтобы мы могли
+                                    подготовить место</span>
+                            </span>
+                        </label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="coming" name="attendance" value="coming" required>
+                                <label for="coming" title="Я буду присутствовать на мероприятии">✓ Буду</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="notComing" name="attendance" value="notComing">
+                                <label for="notComing" title="К сожалению, не смогу прийти">✗ Не смогу</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            Количество гостей
+                            <span class="tooltip">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">Укажите, придёте ли вы один или с кем-то. Это поможет нам
+                                    правильно рассчитать количество мест</span>
+                            </span>
+                        </label>
+                        <select id="guestCount" title="Выберите количество гостей">
+                            <option value="1">Один</option>
+                            <option value="2">С кем-то (+1)</option>
+                            <option value="3">С двумя (+2)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            Комментарий (необязательно)
+                            <span class="tooltip">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">Здесь вы можете оставить пожелания, вопросы или особые
+                                    просьбы</span>
+                            </span>
+                        </label>
+                        <textarea id="comment" placeholder="Ваши пожелания, вопросы..."
+                            title="Оставьте свой комментарий или пожелание"></textarea>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="button" class="btn-secondary" onclick="prevSlide()"
+                            title="Вернуться назад">Назад</button>
+                        <button type="submit" class="btn-primary" id="submitBtn"
+                            title="Отправить подтверждение участия">Отправить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Навигация точками -->
+    <div class="nav-dots">
+        <div class="nav-dot active" onclick="goToSlide(0)" title="Приветствие"></div>
+        <div class="nav-dot" onclick="goToSlide(1)" title="Детали мероприятия"></div>
+        <div class="nav-dot" onclick="goToSlide(2)" title="Программа вечера"></div>
+        <div class="nav-dot" onclick="goToSlide(3)" title="Подтверждение участия"></div>
+    </div>
+
+    <!-- Админ вход -->
+    <div class="admin-lock" onclick="showAdminModal()" title="Вход для организатора">🔒</div>
+
+    <!-- Модальное окно админа -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <h2>Вход для организатора</h2>
+            <div id="adminLogin">
+                <div class="form-group">
+                    <label>
+                        Введите код доступа:
+                        <span class="tooltip">
+                            <span class="tooltip-icon">?</span>
+                            <span class="tooltip-text">Введите специальный код для просмотра списка всех гостей и
+                                статистики</span>
+                        </span>
+                    </label>
+                    <div class="password-wrapper">
+                        <input type="password" id="adminCode" placeholder="Код доступа"
+                            title="Введите код организатора">
+                        <span class="password-toggle" onclick="togglePassword()"
+                            title="Показать/скрыть пароль">👁️</span>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn-secondary" onclick="closeAdminModal()" title="Закрыть окно">Отмена</button>
+                    <button class="btn-primary" onclick="checkAdminCode()"
+                        title="Войти в панель организатора">Войти</button>
+                </div>
+            </div>
+            <div id="adminPanel" style="display: none;">
+                <h3>Список гостей</h3>
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalGuests">0</div>
+                        <div class="stat-label">Всего ответов</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="comingGuests" style="color: #48bb78;">0</div>
+                        <div class="stat-label">Придут</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="notComingGuests" style="color: #f56565;">0</div>
+                        <div class="stat-label">Не придут</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalPeople">0</div>
+                        <div class="stat-label">Всего человек</div>
+                    </div>
+                </div>
+                <div id="guestList" class="guest-list"></div>
+                <div class="btn-group" style="margin-top: 30px;">
+                    <button class="btn-secondary" onclick="closeAdminModal()"
+                        title="Закрыть панель администратора">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Экран благодарности -->
+    <div id="thankYouScreen" class="thank-you-screen">
+        <div class="thank-you-content">
+            <div class="thank-you-icon">✉️</div>
+            <h2>Спасибо!</h2>
+            <p>Ваш ответ успешно отправлен</p>
+            <p style="font-size: 1.2em; margin-top: 30px;">Ждём вас на празднике! 🎉</p>
+            <p style="font-size: 1em; margin-top: 40px; font-style: italic; opacity: 0.95;">
+                Пусть этот день будет наполнен радостью,<br>
+                теплом и незабываемыми моментами!
+            </p>
+        </div>
+    </div>
+
+    <script>
+         
+        const firebaseConfig = {
+            apiKey: "AIzaSyDec68_qdDa60z6pb7P3zXASE5o1eRz4J0",
+            authDomain: "invitation-letter-75c60.firebaseapp.com",
+            projectId: "invitation-letter-75c60",
+            storageBucket: "invitation-letter-75c60.firebasestorage.app",
+            messagingSenderId: "143990106115",
+            appId: "1:143990106115:web:c0638baab9c43d18410636",
+            measurementId: "G-CW32B7PND7"
+        };
+
+        // Инициализация Firebase
+        let db = null;
+        let useFirebase = false;
+
+        try {
+            if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                useFirebase = true;
+                console.log("Firebase подключен!");
+            } else {
+                console.log("Используется локальное хранилище");
+            }
+        } catch (error) {
+            console.log("Firebase не настроен, используется локальное хранилище");
+        }
+
+        // ============= ПЕРЕМЕННЫЕ =============
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const navDots = document.querySelectorAll('.nav-dot');
+        const guests = [];
+        let passwordVisible = false;
+
+        // ============= ФУНКЦИИ ХРАНЕНИЯ ДАННЫХ =============
+
+        function isStorageAvailable() {
+            return typeof window.storage !== 'undefined' &&
+                typeof window.storage.get === 'function' &&
+                typeof window.storage.set === 'function';
+        }
+
+        async function saveGuest(guest) {
+            if (useFirebase && db) {
+                try {
+                    await db.collection('guests').add(guest);
+                    console.log("Гость сохранён в Firebase");
+                    return true;
+                } catch (error) {
+                    console.error("Ошибка Firebase:", error);
+                    return false;
+                }
+            } else if (isStorageAvailable()) {
+                try {
+                    const guestId = 'guest:' + Date.now();
+                    await window.storage.set(guestId, JSON.stringify(guest));
+                    console.log("Гость сохранён в локальное хранилище");
+                    return true;
+                } catch (error) {
+                    console.error("Ошибка сохранения:", error);
+                    return false;
+                }
+            } else {
+                guests.push(guest);
+                console.log("Гость добавлен в память");
+                return true;
+            }
+        }
+
+        async function loadGuests() {
+            guests.length = 0;
+
+            if (useFirebase && db) {
+                try {
+                    const snapshot = await db.collection('guests').get();
+                    snapshot.forEach(doc => {
+                        guests.push(doc.data());
+                    });
+                    console.log("Загружено гостей из Firebase:", guests.length);
+                } catch (error) {
+                    console.error("Ошибка загрузки из Firebase:", error);
+                }
+            } else if (isStorageAvailable()) {
+                try {
+                    const result = await window.storage.list('guest:');
+                    if (result && result.keys) {
+                        for (const key of result.keys) {
+                            try {
+                                const guestData = await window.storage.get(key);
+                                if (guestData && guestData.value) {
+                                    guests.push(JSON.parse(guestData.value));
+                                }
+                            } catch (err) {
+                                console.log('Ошибка загрузки гостя:', err);
+                            }
+                        }
+                    }
+                    console.log("Загружено гостей из локального хранилища:", guests.length);
+                } catch (error) {
+                    console.log('Нет сохранённых данных');
+                }
+            }
+        }
+
+        // ============= ЗАГРУЗКА ПРИ СТАРТЕ =============
+        window.addEventListener('load', async () => {
+            await loadGuests();
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+            }, 2000);
+        });
+
+        // ============= НАВИГАЦИЯ ПО СЛАЙДАМ =============
+        function goToSlide(index) {
+            slides[currentSlide].classList.remove('active');
+            slides[currentSlide].classList.add('prev');
+            navDots[currentSlide].classList.remove('active');
+
+            currentSlide = index;
+
+            slides[currentSlide].classList.remove('prev');
+            slides[currentSlide].classList.add('active');
+            navDots[currentSlide].classList.add('active');
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                goToSlide(currentSlide + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            }
+        }
+
+        // ============= ПОКАЗ/СКРЫТИЕ ПАРОЛЯ =============
+        function togglePassword() {
+            const passwordInput = document.getElementById('adminCode');
+            const toggle = document.querySelector('.password-toggle');
+
+            passwordVisible = !passwordVisible;
+            passwordInput.type = passwordVisible ? 'text' : 'password';
+            toggle.textContent = passwordVisible ? '👁️' : '👁️';
+            toggle.style.opacity = passwordVisible ? '1' : '0.7';
+        }
+
+        // ============= ОБРАБОТКА ФОРМЫ =============
+        document.getElementById('rsvpForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Отправка...';
+
+            const name = document.getElementById('guestName').value.trim();
+            const attendance = document.querySelector('input[name="attendance"]:checked').value;
+            const count = parseInt(document.getElementById('guestCount').value);
+            const comment = document.getElementById('comment').value.trim();
+
+            const guest = {
+                name: name,
+                attendance: attendance,
+                count: count,
+                comment: comment,
+                timestamp: new Date().toISOString()
+            };
+
+            const formContent = document.getElementById('formContent');
+            formContent.classList.add('transform-to-envelope');
+
+            setTimeout(async () => {
+                const saved = await saveGuest(guest);
+
+                if (saved) {
+                    const thankYou = document.getElementById('thankYouScreen');
+                    thankYou.classList.add('show');
+
+                    document.getElementById('rsvpForm').reset();
+                } else {
+                    alert('Произошла ошибка при сохранении. Попробуйте снова.');
+                    formContent.classList.remove('transform-to-envelope');
+                }
+
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Отправить';
+            }, 2000);
+        });
+
+        // ============= АДМИН ПАНЕЛЬ =============
+        function showAdminModal() {
+            document.getElementById('adminModal').classList.add('show');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.remove('show');
+            document.getElementById('adminLogin').style.display = 'block';
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('adminCode').value = '';
+            passwordVisible = false;
+            document.getElementById('adminCode').type = 'password';
+        }
+
+        async function checkAdminCode() {
+            const code = document.getElementById('adminCode').value;
+            if (code === 'admin2024') {
+                document.getElementById('adminLogin').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                await loadGuests();
+                displayGuestList();
+            } else {
+                alert('Неверный код доступа');
+            }
+        }
+
+        function displayGuestList() {
+            const listContainer = document.getElementById('guestList');
+            listContainer.innerHTML = '';
+
+            let totalComing = 0;
+            let totalNotComing = 0;
+            let totalPeople = 0;
+
+            guests.forEach(guest => {
+                const div = document.createElement('div');
+                div.className = `guest-item ${guest.attendance === 'coming' ? 'coming' : 'not-coming'}`;
+
+                const status = guest.attendance === 'coming' ? '✓ Придёт' : '✗ Не придёт';
+                const peopleText = guest.count > 1 ? ` (+${guest.count - 1})` : '';
+                const companions = guest.count > 1 ? `<p style="margin-top: 8px; font-size: 0.95em;"><strong>Количество гостей:</strong> ${guest.count} ${guest.count === 2 ? 'человека' : 'человек'}</p>` : '';
+
+                div.innerHTML = `
+                    <p style="font-size: 1.15em;"><strong>${guest.name}</strong>${peopleText}</p>
+                    <p style="color: ${guest.attendance === 'coming' ? '#48bb78' : '#f56565'}; font-weight: 600; margin-top: 8px; font-size: 1.05em;">${status}</p>
+                    ${companions}
+                    ${guest.comment ? `<p style="font-style: italic; margin-top: 12px; padding: 12px; background: #f7fafc; border-radius: 8px; border-left: 3px solid #667eea;"><strong>Комментарий:</strong> "${guest.comment}"</p>` : ''}
+                    <p style="font-size: 0.88em; color: #718096; margin-top: 12px;">📅 ${new Date(guest.timestamp).toLocaleString('ru-RU', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })}</p>
+                `;
+
+                listContainer.appendChild(div);
+
+                if (guest.attendance === 'coming') {
+                    totalComing++;
+                    totalPeople += guest.count;
+                } else {
+                    totalNotComing++;
+                }
+            });
+
+            if (guests.length === 0) {
+                listContainer.innerHTML = '<p style="text-align: center; color: #718096; padding: 50px; font-size: 1.1em;">Пока нет ответов от гостей</p>';
+            }
+
+            document.getElementById('totalGuests').textContent = guests.length;
+            document.getElementById('comingGuests').textContent = totalComing;
+            document.getElementById('notComingGuests').textContent = totalNotComing;
+            document.getElementById('totalPeople').textContent = totalPeople;
+        }
+    </script>
+</body>
+
+</html>
