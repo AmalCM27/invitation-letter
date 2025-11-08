@@ -1,18 +1,16 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Приглашение на Той</title>
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>✉️</text></svg>">
+    <title>Приглашение на То</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23667eea'><path d='M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z'/></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
-
+    
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
+    
     <style>
         * {
             margin: 0;
@@ -54,7 +52,7 @@
             height: 90px;
             position: relative;
             margin-bottom: 40px;
-            filter: drop-shadow(0 15px 40px rgba(0, 0, 0, 0.3));
+            filter: drop-shadow(0 15px 40px rgba(0,0,0,0.3));
         }
 
         .loader-envelope-body {
@@ -91,52 +89,20 @@
         }
 
         @keyframes floatEnvelope {
-
-            0%,
-            100% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-15px);
-            }
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
         }
 
         @keyframes flapOpenClose {
-
-            0%,
-            30% {
-                transform: rotateX(0deg);
-            }
-
-            50%,
-            80% {
-                transform: rotateX(180deg);
-            }
-
-            100% {
-                transform: rotateX(0deg);
-            }
+            0%, 30% { transform: rotateX(0deg); }
+            50%, 80% { transform: rotateX(180deg); }
+            100% { transform: rotateX(0deg); }
         }
 
         @keyframes letterMove {
-
-            0%,
-            30% {
-                transform: translateY(0);
-                opacity: 1;
-            }
-
-            50% {
-                transform: translateY(-20px);
-                opacity: 0.8;
-            }
-
-            80%,
-            100% {
-                transform: translateY(0);
-                opacity: 1;
-            }
+            0%, 30% { transform: translateY(0); opacity: 1; }
+            50% { transform: translateY(-20px); opacity: 0.8; }
+            80%, 100% { transform: translateY(0); opacity: 1; }
         }
 
         .loader-text {
@@ -148,17 +114,8 @@
         }
 
         @keyframes pulseText {
-
-            0%,
-            100% {
-                opacity: 0.7;
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 1;
-                transform: scale(1.05);
-            }
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
         }
 
         /* Контейнер слайдов */
@@ -219,23 +176,19 @@
                 opacity: 1;
                 border-radius: 25px;
             }
-
             25% {
                 transform: scale(0.85) translateY(-10vh) rotateX(5deg);
                 opacity: 1;
             }
-
             50% {
                 transform: scale(0.4) translateY(-30vh) rotateX(15deg);
                 opacity: 0.9;
                 border-radius: 40px;
             }
-
             75% {
                 transform: scale(0.15) translateY(-70vh) rotateX(25deg) rotateZ(15deg);
                 opacity: 0.5;
             }
-
             100% {
                 transform: scale(0.05) translateY(-150vh) rotateX(40deg) rotateZ(25deg);
                 opacity: 0;
@@ -343,7 +296,7 @@
             transition: opacity 0.3s;
             font-size: 0.9em;
             line-height: 1.5;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
         }
 
         .tooltip-text::after {
@@ -362,8 +315,7 @@
             opacity: 1;
         }
 
-        input[type="text"],
-        input[type="password"] {
+        input[type="text"], input[type="password"] {
             width: 100%;
             padding: clamp(12px, 2.5vw, 16px);
             border: 2px solid #e2e8f0;
@@ -373,8 +325,7 @@
             font-family: 'Montserrat', sans-serif;
         }
 
-        input[type="text"]:focus,
-        input[type="password"]:focus {
+        input[type="text"]:focus, input[type="password"]:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
@@ -431,10 +382,10 @@
         .radio-option label:hover {
             background: linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%);
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
         }
 
-        .radio-option input[type="radio"]:checked+label {
+        .radio-option input[type="radio"]:checked + label {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border-color: #667eea;
@@ -458,6 +409,13 @@
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        select:disabled {
+            background: #f7fafc;
+            color: #a0aec0;
+            cursor: not-allowed;
+            border-color: #e2e8f0;
         }
 
         textarea {
@@ -545,7 +503,7 @@
         .btn-secondary:hover {
             background: linear-gradient(135deg, #cbd5e0 0%, #a0aec0 100%);
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
 
         /* Навигация */
@@ -589,7 +547,7 @@
             cursor: pointer;
             opacity: 0.25;
             transition: all 0.4s ease;
-            z-index: 1000;
+            z-index: 9999;
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
             width: clamp(45px, 8vw, 60px);
@@ -598,13 +556,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
         }
 
         .admin-lock:hover {
             opacity: 0.7;
             transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
         }
 
         /* Модальное окно */
@@ -625,13 +583,8 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .modal.show {
@@ -648,6 +601,33 @@
             overflow-y: auto;
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
             animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #f56565;
+            color: white;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            line-height: 1;
+            padding: 0;
+        }
+
+        .modal-close:hover {
+            background: #e53e3e;
+            transform: rotate(90deg) scale(1.1);
         }
 
         @keyframes slideUp {
@@ -655,7 +635,6 @@
                 transform: translateY(50px);
                 opacity: 0;
             }
-
             to {
                 transform: translateY(0);
                 opacity: 1;
@@ -672,13 +651,13 @@
             margin: 15px 0;
             border-radius: 15px;
             border-left: 5px solid #667eea;
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
             transition: all 0.3s ease;
         }
 
         .guest-item:hover {
             transform: translateX(8px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
 
         .guest-item.coming {
@@ -701,13 +680,13 @@
             padding: clamp(18px, 3.5vw, 25px);
             border-radius: 15px;
             text-align: center;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
             transition: all 0.3s ease;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 35px rgba(0,0,0,0.15);
         }
 
         .stat-number {
@@ -735,7 +714,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 1500;
+            z-index: 5000;
             opacity: 0;
             pointer-events: none;
             transition: opacity 1s ease;
@@ -773,16 +752,33 @@
             animation: bounceIn 1.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        .btn-clear-guests {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .btn-clear-guests:hover {
+            background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(245, 101, 101, 0.4);
+        }
+
         @keyframes scaleIn {
             0% {
                 transform: scale(0);
                 opacity: 0;
             }
-
             50% {
                 transform: scale(1.15);
             }
-
             100% {
                 transform: scale(1);
                 opacity: 1;
@@ -794,15 +790,12 @@
                 transform: scale(0) rotate(0deg);
                 opacity: 0;
             }
-
             50% {
                 transform: scale(1.25) rotate(12deg);
             }
-
             70% {
                 transform: scale(0.9) rotate(-8deg);
             }
-
             100% {
                 transform: scale(1) rotate(0deg);
                 opacity: 1;
@@ -881,7 +874,6 @@
         }
     </style>
 </head>
-
 <body>
     <!-- Загрузочный экран -->
     <div id="loader">
@@ -898,14 +890,11 @@
         <!-- Слайд 1: Приветствие -->
         <div class="slide active" data-slide="0">
             <div class="slide-content">
-                <h1>Приглашаем на Той</h1>
+                <h1>Приглашение на То</h1>
                 <p style="text-align: center; font-size: 1.4em; margin: 30px 0; font-weight: 500;">Дорогие друзья!</p>
-                <p style="text-align: center;">Мы рады пригласить вас на наш праздничный той, наполненный радостью,
-                    теплом и незабываемыми моментами.</p>
-                    <p style="text-align: center;">От Бакдолота и (Имя)</p>
+                <p style="text-align: center;">Мы рады пригласить вас на наш праздничный вечер, наполненный радостью, теплом и незабываемыми моментами.</p>
                 <div class="btn-group">
-                    <button class="btn-primary" onclick="nextSlide()"
-                        title="Перейти к деталям мероприятия">Далее</button>
+                    <button class="btn-primary" onclick="nextSlide()" title="Перейти к деталям мероприятия">Далее</button>
                 </div>
             </div>
         </div>
@@ -914,9 +903,9 @@
         <div class="slide" data-slide="1">
             <div class="slide-content">
                 <h2>Детали мероприятия</h2>
-
+                
                 <div class="info-block">
-                    <p><strong>📅 Дата:</strong> 10 ноября 2025 года</p>
+                    <p><strong>📅 Дата:</strong> 15 декабря 2025 года</p>
                 </div>
 
                 <div class="info-block">
@@ -924,8 +913,8 @@
                 </div>
 
                 <div class="info-block">
-                    <p><strong>📍 Место:</strong> ЦУМ <br>
-                        ул. Масалиева, 25</p>
+                    <p><strong>📍 Место:</strong> Ресторан "Золотой зал"<br>
+                    ул. Праздничная, 25</p>
                 </div>
 
                 <div class="info-block">
@@ -943,7 +932,7 @@
         <div class="slide" data-slide="2">
             <div class="slide-content">
                 <h2>Программа вечера</h2>
-
+                
                 <div class="info-block">
                     <p><strong>18:00</strong> — Приветствие гостей</p>
                 </div>
@@ -960,8 +949,7 @@
                     <p><strong>22:00</strong> — Танцы и общение</p>
                 </div>
 
-                <p style="text-align: center; margin-top: 30px; font-style: italic;">Будем рады видеть вас на нашем
-                    празднике!</p>
+                <p style="text-align: center; margin-top: 30px; font-style: italic;">Будем рады видеть вас на нашем празднике!</p>
 
                 <div class="btn-group">
                     <button class="btn-secondary" onclick="prevSlide()" title="Вернуться назад">Назад</button>
@@ -974,7 +962,7 @@
         <div class="slide" data-slide="3">
             <div class="slide-content" id="formContent">
                 <h2>Подтверждение участия</h2>
-
+                
                 <form id="rsvpForm">
                     <div class="form-group">
                         <label>
@@ -992,8 +980,7 @@
                             Вы придёте? *
                             <span class="tooltip">
                                 <span class="tooltip-icon">?</span>
-                                <span class="tooltip-text">Пожалуйста, сообщите нам о вашем решении, чтобы мы могли
-                                    подготовить место</span>
+                                <span class="tooltip-text">Пожалуйста, сообщите нам о вашем решении, чтобы мы могли подготовить место</span>
                             </span>
                         </label>
                         <div class="radio-group">
@@ -1013,8 +1000,7 @@
                             Количество гостей
                             <span class="tooltip">
                                 <span class="tooltip-icon">?</span>
-                                <span class="tooltip-text">Укажите, придёте ли вы один или с кем-то. Это поможет нам
-                                    правильно рассчитать количество мест</span>
+                                <span class="tooltip-text">Укажите, придёте ли вы один или с кем-то. Это поможет нам правильно рассчитать количество мест</span>
                             </span>
                         </label>
                         <select id="guestCount" title="Выберите количество гостей">
@@ -1029,19 +1015,15 @@
                             Комментарий (необязательно)
                             <span class="tooltip">
                                 <span class="tooltip-icon">?</span>
-                                <span class="tooltip-text">Здесь вы можете оставить пожелания, вопросы или особые
-                                    просьбы</span>
+                                <span class="tooltip-text">Здесь вы можете оставить пожелания, вопросы или особые просьбы</span>
                             </span>
                         </label>
-                        <textarea id="comment" placeholder="Ваши пожелания, вопросы..."
-                            title="Оставьте свой комментарий или пожелание"></textarea>
+                        <textarea id="comment" placeholder="Ваши пожелания, вопросы..." title="Оставьте свой комментарий или пожелание"></textarea>
                     </div>
 
                     <div class="btn-group">
-                        <button type="button" class="btn-secondary" onclick="prevSlide()"
-                            title="Вернуться назад">Назад</button>
-                        <button type="submit" class="btn-primary" id="submitBtn"
-                            title="Отправить подтверждение участия">Отправить</button>
+                        <button type="button" class="btn-secondary" onclick="prevSlide()" title="Вернуться назад">Назад</button>
+                        <button type="submit" class="btn-primary" id="submitBtn" title="Отправить подтверждение участия">Отправить</button>
                     </div>
                 </form>
             </div>
@@ -1057,11 +1039,16 @@
     </div>
 
     <!-- Админ вход -->
-    <div class="admin-lock" onclick="showAdminModal()" title="Вход для организатора">🔒</div>
+    <div class="admin-lock" onclick="showAdminModal()" title="Вход для организатора">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="60%" height="60%">
+            <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+        </svg>
+    </div>
 
     <!-- Модальное окно админа -->
-    <div id="adminModal" class="modal">
-        <div class="modal-content">
+    <div id="adminModal" class="modal" onclick="closeModalOnOutsideClick(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeAdminModal()" title="Закрыть">×</button>
             <h2>Вход для организатора</h2>
             <div id="adminLogin">
                 <div class="form-group">
@@ -1069,21 +1056,21 @@
                         Введите код доступа:
                         <span class="tooltip">
                             <span class="tooltip-icon">?</span>
-                            <span class="tooltip-text">Введите специальный код для просмотра списка всех гостей и
-                                статистики</span>
+                            <span class="tooltip-text">Введите специальный код для просмотра списка всех гостей и статистики</span>
                         </span>
                     </label>
                     <div class="password-wrapper">
-                        <input type="password" id="adminCode" placeholder="Код доступа"
-                            title="Введите код организатора">
-                        <span class="password-toggle" onclick="togglePassword()"
-                            title="Показать/скрыть пароль">👁️</span>
+                        <input type="password" id="adminCode" placeholder="Код доступа" title="Введите код организатора">
+                        <span class="password-toggle" onclick="togglePassword()" title="Показать/скрыть пароль">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                            </svg>
+                        </span>
                     </div>
                 </div>
                 <div class="btn-group">
                     <button class="btn-secondary" onclick="closeAdminModal()" title="Закрыть окно">Отмена</button>
-                    <button class="btn-primary" onclick="checkAdminCode()"
-                        title="Войти в панель организатора">Войти</button>
+                    <button class="btn-primary" onclick="checkAdminCode()" title="Войти в панель организатора">Войти</button>
                 </div>
             </div>
             <div id="adminPanel" style="display: none;">
@@ -1107,9 +1094,11 @@
                     </div>
                 </div>
                 <div id="guestList" class="guest-list"></div>
-                <div class="btn-group" style="margin-top: 30px;">
-                    <button class="btn-secondary" onclick="closeAdminModal()"
-                        title="Закрыть панель администратора">Закрыть</button>
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn-clear-guests" onclick="clearAllGuests()" title="Удалить всех гостей из списка">Очистить список гостей</button>
+                </div>
+                <div class="btn-group" style="margin-top: 20px;">
+                    <button class="btn-secondary" onclick="closeAdminModal()" title="Закрыть панель администратора">Закрыть</button>
                 </div>
             </div>
         </div>
@@ -1117,20 +1106,13 @@
 
     <!-- Экран благодарности -->
     <div id="thankYouScreen" class="thank-you-screen">
-        <div class="thank-you-content">
-            <div class="thank-you-icon">✉️</div>
-            <h2>Спасибо!</h2>
-            <p>Ваш ответ успешно отправлен</p>
-            <p style="font-size: 1.2em; margin-top: 30px;">Ждём вас на празднике! 🎉</p>
-            <p style="font-size: 1em; margin-top: 40px; font-style: italic; opacity: 0.95;">
-                Пусть этот день будет наполнен радостью,<br>
-                теплом и незабываемыми моментами!
-            </p>
+        <div class="thank-you-content" id="thankYouContent">
+            <!-- Контент будет добавлен динамически -->
         </div>
     </div>
 
     <script>
-         
+        // ============= FIREBASE CONFIGURATION =============
         const firebaseConfig = {
             apiKey: "AIzaSyDec68_qdDa60z6pb7P3zXASE5o1eRz4J0",
             authDomain: "invitation-letter-75c60.firebaseapp.com",
@@ -1146,16 +1128,13 @@
         let useFirebase = false;
 
         try {
-            if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
-                firebase.initializeApp(firebaseConfig);
-                db = firebase.firestore();
-                useFirebase = true;
-                console.log("Firebase подключен!");
-            } else {
-                console.log("Используется локальное хранилище");
-            }
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            useFirebase = true;
+            console.log("✅ Firebase подключен успешно!");
         } catch (error) {
-            console.log("Firebase не настроен, используется локальное хранилище");
+            console.log("❌ Firebase не подключен:", error);
+            console.log("Используется локальное хранилище");
         }
 
         // ============= ПЕРЕМЕННЫЕ =============
@@ -1166,14 +1145,24 @@
         let passwordVisible = false;
 
         // ============= ФУНКЦИИ ХРАНЕНИЯ ДАННЫХ =============
-
+        
         function isStorageAvailable() {
-            return typeof window.storage !== 'undefined' &&
-                typeof window.storage.get === 'function' &&
-                typeof window.storage.set === 'function';
+            return typeof window.storage !== 'undefined' && 
+                   typeof window.storage.get === 'function' &&
+                   typeof window.storage.set === 'function';
         }
 
         async function saveGuest(guest) {
+            // Сохраняем в localStorage для постоянного хранения
+            try {
+                const existingGuests = JSON.parse(localStorage.getItem('invitationGuests') || '[]');
+                existingGuests.push(guest);
+                localStorage.setItem('invitationGuests', JSON.stringify(existingGuests));
+                console.log("Гость сохранён в localStorage");
+            } catch (error) {
+                console.error("Ошибка сохранения в localStorage:", error);
+            }
+
             if (useFirebase && db) {
                 try {
                     await db.collection('guests').add(guest);
@@ -1181,7 +1170,7 @@
                     return true;
                 } catch (error) {
                     console.error("Ошибка Firebase:", error);
-                    return false;
+                    return true; // Возвращаем true, так как сохранили в localStorage
                 }
             } else if (isStorageAvailable()) {
                 try {
@@ -1191,7 +1180,7 @@
                     return true;
                 } catch (error) {
                     console.error("Ошибка сохранения:", error);
-                    return false;
+                    return true; // Возвращаем true, так как сохранили в localStorage
                 }
             } else {
                 guests.push(guest);
@@ -1203,13 +1192,32 @@
         async function loadGuests() {
             guests.length = 0;
 
+            // Загружаем из localStorage
+            try {
+                const localGuests = JSON.parse(localStorage.getItem('invitationGuests') || '[]');
+                guests.push(...localGuests);
+                console.log("Загружено гостей из localStorage:", localGuests.length);
+            } catch (error) {
+                console.log("Ошибка загрузки из localStorage");
+            }
+
             if (useFirebase && db) {
                 try {
                     const snapshot = await db.collection('guests').get();
+                    const firebaseGuests = [];
                     snapshot.forEach(doc => {
-                        guests.push(doc.data());
+                        firebaseGuests.push(doc.data());
                     });
-                    console.log("Загружено гостей из Firebase:", guests.length);
+                    // Объединяем с локальными гостями, избегая дубликатов
+                    firebaseGuests.forEach(fg => {
+                        const exists = guests.some(g => 
+                            g.name === fg.name && g.timestamp === fg.timestamp
+                        );
+                        if (!exists) {
+                            guests.push(fg);
+                        }
+                    });
+                    console.log("Загружено гостей из Firebase:", firebaseGuests.length);
                 } catch (error) {
                     console.error("Ошибка загрузки из Firebase:", error);
                 }
@@ -1221,14 +1229,21 @@
                             try {
                                 const guestData = await window.storage.get(key);
                                 if (guestData && guestData.value) {
-                                    guests.push(JSON.parse(guestData.value));
+                                    const storageGuest = JSON.parse(guestData.value);
+                                    // Проверяем, нет ли уже в localStorage
+                                    const exists = guests.some(g => 
+                                        g.name === storageGuest.name && g.timestamp === storageGuest.timestamp
+                                    );
+                                    if (!exists) {
+                                        guests.push(storageGuest);
+                                    }
                                 }
                             } catch (err) {
                                 console.log('Ошибка загрузки гостя:', err);
                             }
                         }
                     }
-                    console.log("Загружено гостей из локального хранилища:", guests.length);
+                    console.log("Общее количество гостей:", guests.length);
                 } catch (error) {
                     console.log('Нет сохранённых данных');
                 }
@@ -1241,6 +1256,26 @@
             setTimeout(() => {
                 document.getElementById('loader').classList.add('hidden');
             }, 2000);
+
+            // Добавляем слушатели для блокировки количества гостей
+            const comingRadio = document.getElementById('coming');
+            const notComingRadio = document.getElementById('notComing');
+            
+            if (comingRadio && notComingRadio) {
+                comingRadio.addEventListener('change', updateGuestCountState);
+                notComingRadio.addEventListener('change', updateGuestCountState);
+            }
+
+            // Enter для входа в админку
+            const adminCodeInput = document.getElementById('adminCode');
+            if (adminCodeInput) {
+                adminCodeInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        checkAdminCode();
+                    }
+                });
+            }
         });
 
         // ============= НАВИГАЦИЯ ПО СЛАЙДАМ =============
@@ -1272,15 +1307,44 @@
         function togglePassword() {
             const passwordInput = document.getElementById('adminCode');
             const toggle = document.querySelector('.password-toggle');
-
+            
             passwordVisible = !passwordVisible;
             passwordInput.type = passwordVisible ? 'text' : 'password';
-            toggle.textContent = passwordVisible ? '👁️' : '👁️';
-            toggle.style.opacity = passwordVisible ? '1' : '0.7';
+        }
+
+        // ============= БЛОКИРОВКА КОЛИЧЕСТВА ГОСТЕЙ =============
+        function updateGuestCountState() {
+            const notComingRadio = document.getElementById('notComing');
+            const guestCountSelect = document.getElementById('guestCount');
+            
+            if (notComingRadio && notComingRadio.checked) {
+                // Блокируем выбор количества гостей
+                guestCountSelect.disabled = true;
+                guestCountSelect.value = '1';
+                guestCountSelect.style.backgroundColor = '#f7fafc';
+                guestCountSelect.style.color = '#a0aec0';
+                guestCountSelect.style.cursor = 'not-allowed';
+                guestCountSelect.title = 'Недоступно, так как вы не придёте на мероприятие';
+                
+                // Показываем уведомление при попытке клика
+                guestCountSelect.onclick = function(e) {
+                    e.preventDefault();
+                    alert('⚠️ Выбор количества гостей недоступен, так как вы не придёте на мероприятие');
+                    return false;
+                };
+            } else {
+                // Разблокируем
+                guestCountSelect.disabled = false;
+                guestCountSelect.style.backgroundColor = 'white';
+                guestCountSelect.style.color = '#2d3748';
+                guestCountSelect.style.cursor = 'pointer';
+                guestCountSelect.title = 'Выберите количество гостей';
+                guestCountSelect.onclick = null;
+            }
         }
 
         // ============= ОБРАБОТКА ФОРМЫ =============
-        document.getElementById('rsvpForm').addEventListener('submit', async function (e) {
+        document.getElementById('rsvpForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const submitBtn = document.getElementById('submitBtn');
@@ -1305,11 +1369,47 @@
 
             setTimeout(async () => {
                 const saved = await saveGuest(guest);
-
+                
                 if (saved) {
                     const thankYou = document.getElementById('thankYouScreen');
+                    const thankYouContent = document.getElementById('thankYouContent');
+                    
+                    // Разные сообщения в зависимости от ответа
+                    if (attendance === 'coming') {
+                        thankYouContent.innerHTML = `
+                            <div class="thank-you-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="100%" height="100%">
+                                    <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+                                </svg>
+                            </div>
+                            <h2>Спасибо!</h2>
+                            <p>Ваш ответ успешно отправлен</p>
+                            <p style="font-size: 1.3em; margin-top: 30px; font-weight: 500;">Ждём вас на празднике!</p>
+                            <p style="font-size: 1em; margin-top: 40px; font-style: italic; opacity: 0.95; line-height: 1.8;">
+                                Пусть этот день будет наполнен радостью,<br>
+                                теплом и незабываемыми моментами!<br>
+                                До встречи на празднике!
+                            </p>
+                        `;
+                    } else {
+                        thankYouContent.innerHTML = `
+                            <div class="thank-you-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="100%" height="100%">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                                </svg>
+                            </div>
+                            <h2>Спасибо за ответ!</h2>
+                            <p>Ваш ответ успешно получен</p>
+                            <p style="font-size: 1.3em; margin-top: 30px; font-weight: 500;">Очень жаль, что вы не сможете прийти</p>
+                            <p style="font-size: 1em; margin-top: 40px; font-style: italic; opacity: 0.95; line-height: 1.8;">
+                                Надеемся, что в следующий раз<br>
+                                вы сможете присоединиться к нам!<br>
+                                Будем скучать!
+                            </p>
+                        `;
+                    }
+                    
                     thankYou.classList.add('show');
-
                     document.getElementById('rsvpForm').reset();
                 } else {
                     alert('Произошла ошибка при сохранении. Попробуйте снова.');
@@ -1335,6 +1435,12 @@
             document.getElementById('adminCode').type = 'password';
         }
 
+        function closeModalOnOutsideClick(event) {
+            if (event.target === document.getElementById('adminModal')) {
+                closeAdminModal();
+            }
+        }
+
         async function checkAdminCode() {
             const code = document.getElementById('adminCode').value;
             if (code === 'admin2024') {
@@ -1344,6 +1450,15 @@
                 displayGuestList();
             } else {
                 alert('Неверный код доступа');
+            }
+        }
+
+        function clearAllGuests() {
+            if (confirm('Вы уверены, что хотите удалить всех гостей? Это действие нельзя отменить!')) {
+                localStorage.removeItem('invitationGuests');
+                guests.length = 0;
+                displayGuestList();
+                alert('Список гостей очищен!');
             }
         }
 
@@ -1358,25 +1473,25 @@
             guests.forEach(guest => {
                 const div = document.createElement('div');
                 div.className = `guest-item ${guest.attendance === 'coming' ? 'coming' : 'not-coming'}`;
-
+                
                 const status = guest.attendance === 'coming' ? '✓ Придёт' : '✗ Не придёт';
                 const peopleText = guest.count > 1 ? ` (+${guest.count - 1})` : '';
                 const companions = guest.count > 1 ? `<p style="margin-top: 8px; font-size: 0.95em;"><strong>Количество гостей:</strong> ${guest.count} ${guest.count === 2 ? 'человека' : 'человек'}</p>` : '';
-
+                
                 div.innerHTML = `
                     <p style="font-size: 1.15em;"><strong>${guest.name}</strong>${peopleText}</p>
                     <p style="color: ${guest.attendance === 'coming' ? '#48bb78' : '#f56565'}; font-weight: 600; margin-top: 8px; font-size: 1.05em;">${status}</p>
                     ${companions}
                     ${guest.comment ? `<p style="font-style: italic; margin-top: 12px; padding: 12px; background: #f7fafc; border-radius: 8px; border-left: 3px solid #667eea;"><strong>Комментарий:</strong> "${guest.comment}"</p>` : ''}
-                    <p style="font-size: 0.88em; color: #718096; margin-top: 12px;">📅 ${new Date(guest.timestamp).toLocaleString('ru-RU', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                })}</p>
+                    <p style="font-size: 0.88em; color: #718096; margin-top: 12px;">📅 ${new Date(guest.timestamp).toLocaleString('ru-RU', { 
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })}</p>
                 `;
-
+                
                 listContainer.appendChild(div);
 
                 if (guest.attendance === 'coming') {
@@ -1398,5 +1513,4 @@
         }
     </script>
 </body>
-
 </html>
